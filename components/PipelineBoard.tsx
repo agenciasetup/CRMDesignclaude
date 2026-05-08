@@ -43,7 +43,7 @@ export default function PipelineBoard() {
         const data = await listLeads();
         if (alive) setLeads(data);
       } catch (e: unknown) {
-        if (alive) setErr(e instanceof Error ? e.message : "Erro ao carregar leads.");
+        if (alive) setErr(e instanceof Error ? e.message : "Não foi possível carregar a carteira.");
       } finally {
         if (alive) setLoading(false);
       }
@@ -55,12 +55,12 @@ export default function PipelineBoard() {
 
   const byStage = useMemo(() => {
     const map: Record<Stage, Lead[]> = {
-      novo_lead: [],
-      contato_feito: [],
-      proposta_enviada: [],
-      negociacao: [],
-      fechado_ganhou: [],
-      perdido: [],
+      prospeccao: [],
+      contato_inicial: [],
+      reuniao: [],
+      proposta: [],
+      cliente_ativo: [],
+      arquivado: [],
     };
     for (const l of leads) map[l.stage]?.push(l);
     for (const k of Object.keys(map) as Stage[]) {
@@ -147,19 +147,19 @@ export default function PipelineBoard() {
     try {
       await Promise.all(updates.map((u) => moveLead(u.id, u.stage, u.position)));
     } catch (e: unknown) {
-      setErr(e instanceof Error ? e.message : "Erro ao mover lead.");
+      setErr(e instanceof Error ? e.message : "Não foi possível atualizar o estágio.");
     }
   }
 
   async function handleCreate(values: Partial<Lead>) {
-    const stage = (creatingFor ?? "novo_lead") as Stage;
+    const stage = (creatingFor ?? "prospeccao") as Stage;
     const created = await createLead({ ...values, stage });
     setLeads((prev) => [...prev, created]);
     setCreatingFor(null);
   }
 
   if (loading) {
-    return <div className="px-8 py-6 text-sm text-[var(--muted-foreground)]">Carregando pipeline...</div>;
+    return <div className="px-8 py-6 text-sm text-[var(--muted-foreground)]">Carregando o pipeline...</div>;
   }
 
   return (
@@ -204,14 +204,14 @@ export default function PipelineBoard() {
       <Modal
         open={!!creatingFor}
         onClose={() => setCreatingFor(null)}
-        title="Novo lead"
+        title="Novo cliente potencial"
         size="lg"
       >
         <LeadForm
-          initial={{ stage: creatingFor ?? "novo_lead" }}
+          initial={{ stage: creatingFor ?? "prospeccao" }}
           onSubmit={handleCreate}
           onCancel={() => setCreatingFor(null)}
-          submitLabel="Criar lead"
+          submitLabel="Cadastrar"
         />
       </Modal>
     </div>
@@ -255,7 +255,7 @@ function Column({
         <button
           onClick={onAdd}
           className="p-1 rounded hover:bg-black/5"
-          aria-label="Adicionar lead"
+          aria-label="Adicionar cliente potencial"
         >
           <Plus size={16} />
         </button>
@@ -279,7 +279,7 @@ function Column({
           ))}
           {items.length === 0 && (
             <div className="text-xs text-[var(--muted-foreground)] text-center py-6 select-none">
-              Sem leads
+              Nenhum cliente nesta fase
             </div>
           )}
         </div>

@@ -68,10 +68,10 @@ export default function ImportWizard() {
           estimated_value: valueRaw ? Number(valueRaw) : null,
           probability: probRaw ? Math.min(100, Math.max(0, Number(probRaw))) : null,
           notes: get("notes") || null,
-          stage: "novo_lead" as Stage,
+          stage: "prospeccao" as Stage,
         };
       });
-      const filtered = leads.filter((l) => l.name && l.name !== "Sem nome");
+      const filtered = leads.filter((l) => l.name && l.name !== "Sem identificação");
       const toInsert = filtered.length > 0 ? filtered : leads;
       const inserted = await bulkInsertLeads(toInsert);
       setResult({ inserted, total: toInsert.length });
@@ -100,7 +100,7 @@ export default function ImportWizard() {
         </div>
         <h2 className="text-xl font-bold">Importação concluída</h2>
         <p className="text-sm text-[var(--muted-foreground)] mt-2">
-          {result.inserted} de {result.total} leads importados com sucesso.
+          {result.inserted} de {result.total} cadastros importados com sucesso.
         </p>
         <div className="mt-5 flex gap-2 justify-center">
           <button onClick={reset} className="btn-ghost">
@@ -126,7 +126,7 @@ export default function ImportWizard() {
             </div>
           </div>
           <p className="text-sm text-[var(--muted-foreground)]">
-            Mapeie as colunas do arquivo para os campos do lead. Apenas o campo{" "}
+            Mapeie as colunas do arquivo para os campos do cadastro. Apenas o campo{" "}
             <strong>Nome</strong> é obrigatório.
           </p>
         </div>
@@ -206,7 +206,7 @@ export default function ImportWizard() {
           >
             {importing
               ? "Importando..."
-              : `Importar ${table.rows.length} lead${table.rows.length === 1 ? "" : "s"}`}
+              : `Importar ${table.rows.length} cadastro${table.rows.length === 1 ? "" : "s"}`}
           </button>
         </div>
       </div>
@@ -236,7 +236,7 @@ export default function ImportWizard() {
         </div>
         <div className="font-semibold">Arraste o arquivo aqui</div>
         <div className="text-sm text-[var(--muted-foreground)] mt-1">
-          Suporta CSV, XLS e XLSX. Os leads importados entram no estágio “Novo Lead”.
+          Suporta CSV, XLS e XLSX. Os cadastros importados entram no estágio “Prospecção”.
         </div>
         <label className="btn-primary mt-5 cursor-pointer">
           Selecionar arquivo
@@ -257,9 +257,9 @@ export default function ImportWizard() {
         </div>
       )}
       <div className="mt-6 text-xs text-[var(--muted-foreground)]">
-        Dica: a primeira linha do arquivo deve conter os cabeçalhos (ex.: Nome, E-mail,
-        Telefone, Empresa, Instagram, Tags...). O CRM tenta detectar o mapeamento
-        automaticamente.
+        Orientação: a primeira linha do arquivo deve conter os cabeçalhos (ex.: Razão social,
+        E-mail, Telefone, Empresa, LinkedIn, Áreas de atuação, Honorários...). O sistema
+        detecta o mapeamento automaticamente, mas você pode ajustá-lo manualmente em seguida.
       </div>
     </div>
   );

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CRM Design — Vendas para designers",
-  description: "CRM de prospecção e pipeline para designers.",
+  title: "CRM Jurídico — Prospecção para advocacia",
+  description: "CRM de prospecção e gestão de pipeline para advogados e escritórios de advocacia.",
 };
 
 export default function RootLayout({

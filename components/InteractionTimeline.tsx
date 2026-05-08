@@ -57,7 +57,7 @@ export default function InteractionTimeline({ leadId }: { leadId: string }) {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Apagar esta interação?")) return;
+    if (!confirm("Confirma a exclusão deste registro?")) return;
     try {
       await deleteInteraction(id);
       setItems((prev) => prev.filter((i) => i.id !== id));
@@ -86,11 +86,11 @@ export default function InteractionTimeline({ leadId }: { leadId: string }) {
           className="input min-h-20"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="O que aconteceu? Liguei e ele pediu pra mandar proposta na próxima semana..."
+          placeholder="Descreva o contato realizado. Ex.: Reunião realizada em 12/03, cliente solicitou envio de proposta para análise jurídica preventiva."
         />
         <div className="flex justify-end">
           <button type="submit" disabled={saving || !content.trim()} className="btn-primary">
-            {saving ? "Adicionando..." : "Adicionar interação"}
+            {saving ? "Registrando..." : "Registrar contato"}
           </button>
         </div>
       </form>
@@ -105,7 +105,7 @@ export default function InteractionTimeline({ leadId }: { leadId: string }) {
         <div className="text-sm text-[var(--muted-foreground)]">Carregando...</div>
       ) : items.length === 0 ? (
         <div className="text-sm text-[var(--muted-foreground)] text-center py-6">
-          Nenhuma interação registrada.
+          Nenhum contato registrado até o momento.
         </div>
       ) : (
         <ol className="relative border-l-2 border-[var(--border)] pl-6 space-y-4 ml-2">

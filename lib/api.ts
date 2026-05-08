@@ -34,12 +34,12 @@ export async function getLead(id: string): Promise<Lead | null> {
 
 export async function createLead(lead: Partial<Lead>): Promise<Lead> {
   const payload = {
-    name: lead.name ?? "Sem nome",
+    name: lead.name ?? "Sem identificação",
     email: lead.email ?? null,
     phone: lead.phone ?? null,
     company: lead.company ?? null,
     instagram: lead.instagram ?? null,
-    stage: lead.stage ?? "novo_lead",
+    stage: lead.stage ?? "prospeccao",
     source: lead.source ?? null,
     tags: lead.tags ?? [],
     estimated_value: lead.estimated_value ?? null,
@@ -75,12 +75,12 @@ export async function bulkInsertLeads(leads: Partial<Lead>[]): Promise<number> {
   const base = Date.now();
   for (let i = 0; i < leads.length; i += chunkSize) {
     const chunk = leads.slice(i, i + chunkSize).map((l, idx) => ({
-      name: l.name ?? "Sem nome",
+      name: l.name ?? "Sem identificação",
       email: l.email ?? null,
       phone: l.phone ?? null,
       company: l.company ?? null,
       instagram: l.instagram ?? null,
-      stage: (l.stage ?? "novo_lead") as Stage,
+      stage: (l.stage ?? "prospeccao") as Stage,
       source: l.source ?? null,
       tags: l.tags ?? [],
       estimated_value: l.estimated_value ?? null,

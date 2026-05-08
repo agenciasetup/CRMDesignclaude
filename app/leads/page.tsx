@@ -89,7 +89,7 @@ function LeadsListInner() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Apagar este lead?")) return;
+    if (!confirm("Confirma a exclusão deste cadastro? A operação é irreversível.")) return;
     await deleteLead(id);
     setLeads((prev) => prev.filter((l) => l.id !== id));
   }
@@ -105,15 +105,15 @@ function LeadsListInner() {
   return (
     <div>
       <PageHeader
-        title="Leads"
-        description={`${leads.length} lead${leads.length === 1 ? "" : "s"} no total.`}
+        title="Clientes potenciais"
+        description={`${leads.length} cadastro${leads.length === 1 ? "" : "s"} na carteira.`}
         actions={
           <>
             <Link href="/leads/import" className="btn-ghost">
               <Upload size={16} /> Importar
             </Link>
             <button onClick={() => setCreating(true)} className="btn-primary">
-              <Plus size={16} /> Novo lead
+              <Plus size={16} /> Novo cliente potencial
             </button>
           </>
         }
@@ -125,7 +125,7 @@ function LeadsListInner() {
             <Search size={16} className="text-[var(--muted-foreground)]" />
             <input
               className="bg-transparent outline-none text-sm w-full"
-              placeholder="Buscar por nome, e-mail, empresa..."
+              placeholder="Buscar por contato, e-mail ou empresa..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -147,7 +147,7 @@ function LeadsListInner() {
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value)}
           >
-            <option value="all">Todas as fontes</option>
+            <option value="all">Todas as origens</option>
             {sources.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -159,7 +159,7 @@ function LeadsListInner() {
             value={tagFilter}
             onChange={(e) => setTagFilter(e.target.value)}
           >
-            <option value="all">Todas as tags</option>
+            <option value="all">Todas as áreas</option>
             {tags.map((t) => (
               <option key={t} value={t}>
                 {t}
@@ -179,12 +179,12 @@ function LeadsListInner() {
             <table className="w-full text-sm">
               <thead className="bg-[var(--muted)] text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
                 <tr>
-                  <th className="text-left px-4 py-2">Nome</th>
+                  <th className="text-left px-4 py-2">Contato</th>
                   <th className="text-left px-4 py-2">Empresa</th>
                   <th className="text-left px-4 py-2">Estágio</th>
-                  <th className="text-left px-4 py-2">Fonte</th>
-                  <th className="text-right px-4 py-2">Valor</th>
-                  <th className="text-left px-4 py-2">Criado</th>
+                  <th className="text-left px-4 py-2">Origem</th>
+                  <th className="text-right px-4 py-2">Honorários</th>
+                  <th className="text-left px-4 py-2">Cadastro</th>
                   <th className="text-right px-4 py-2">Ações</th>
                 </tr>
               </thead>
@@ -198,7 +198,7 @@ function LeadsListInner() {
                 ) : filtered.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-4 py-10 text-center text-[var(--muted-foreground)]">
-                      Nenhum lead encontrado.
+                      Nenhum cadastro encontrado com os filtros atuais.
                     </td>
                   </tr>
                 ) : (
@@ -253,11 +253,11 @@ function LeadsListInner() {
         </div>
       </div>
 
-      <Modal open={creating} onClose={() => setCreating(false)} title="Novo lead" size="lg">
+      <Modal open={creating} onClose={() => setCreating(false)} title="Novo cliente potencial" size="lg">
         <LeadForm
           onSubmit={handleCreate}
           onCancel={() => setCreating(false)}
-          submitLabel="Criar lead"
+          submitLabel="Cadastrar"
         />
       </Modal>
     </div>

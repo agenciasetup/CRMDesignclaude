@@ -18,8 +18,8 @@ export default function PipelinePage() {
   return (
     <div>
       <PageHeader
-        title="Pipeline"
-        description="Arraste os leads entre os estágios para atualizar o status."
+        title="Pipeline de prospecção"
+        description="Acompanhe a evolução de cada cliente potencial. Arraste os cartões entre as fases para atualizar o estágio."
         actions={
           <>
             <Link href="/leads/import" className="btn-ghost">
@@ -28,7 +28,7 @@ export default function PipelinePage() {
             </Link>
             <Link href="/leads?new=1" className="btn-primary">
               <Plus size={16} />
-              Novo lead
+              Novo cliente potencial
             </Link>
           </>
         }
