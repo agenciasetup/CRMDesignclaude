@@ -16,8 +16,8 @@ export default function ImportPage() {
   return (
     <div>
       <PageHeader
-        title="Importar leads"
-        description="Carregue um arquivo CSV ou Excel para adicionar leads em lote."
+        title="Importar cadastros"
+        description="Carregue uma planilha (CSV, XLS ou XLSX) para incluir clientes potenciais em lote na sua carteira."
       />
       <div className="px-8 pb-12">
         <ImportWizard />

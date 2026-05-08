@@ -8,10 +8,11 @@ export default function SetupNotice() {
       <div className="brand-gradient w-12 h-12 rounded-lg flex items-center justify-center text-black mb-4">
         <Settings size={20} />
       </div>
-      <h2 className="text-xl font-bold">Configure o Supabase</h2>
+      <h2 className="text-xl font-bold">Configuração inicial necessária</h2>
       <p className="text-sm text-[var(--muted-foreground)] mt-2">
-        Para começar a usar o CRM Design, conecte um projeto Supabase. Isso
-        leva 2 minutos.
+        Para utilizar o CRM Jurídico, é preciso conectar uma instância Supabase
+        para armazenar a carteira de clientes potenciais. O processo leva
+        aproximadamente dois minutos.
       </p>
       <ol className="mt-4 space-y-2 text-sm list-decimal list-inside">
         <li>
@@ -41,7 +42,7 @@ export default function SetupNotice() {
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...`}
           </pre>
         </li>
-        <li>Reinicie o servidor de desenvolvimento.</li>
+        <li>Reinicie o servidor de desenvolvimento para aplicar as variáveis.</li>
       </ol>
     </div>
   );

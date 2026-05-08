@@ -1,10 +1,10 @@
 export type Stage =
-  | "novo_lead"
-  | "contato_feito"
-  | "proposta_enviada"
-  | "negociacao"
-  | "fechado_ganhou"
-  | "perdido";
+  | "prospeccao"
+  | "contato_inicial"
+  | "reuniao"
+  | "proposta"
+  | "cliente_ativo"
+  | "arquivado";
 
 export type Lead = {
   id: string;

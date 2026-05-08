@@ -1,4 +1,4 @@
--- CRM Design — Initial schema
+-- CRM Jurídico — Initial schema
 -- Single-tenant (uso pessoal). RLS enabled with permissive policies for the anon role.
 
 create extension if not exists "pgcrypto";
@@ -10,7 +10,7 @@ create table if not exists leads (
   phone text,
   company text,
   instagram text,
-  stage text not null default 'novo_lead',
+  stage text not null default 'prospeccao',
   source text,
   tags text[] not null default '{}',
   estimated_value numeric(12,2),

@@ -42,13 +42,13 @@ export default function DashboardPage() {
   const stats = useMemo(() => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const open = leads.filter((l) => l.stage !== "fechado_ganhou" && l.stage !== "perdido");
+    const open = leads.filter((l) => l.stage !== "cliente_ativo" && l.stage !== "arquivado");
     const totalPipeline = open.reduce((s, l) => s + (l.estimated_value ?? 0), 0);
-    const wonAll = leads.filter((l) => l.stage === "fechado_ganhou");
+    const wonAll = leads.filter((l) => l.stage === "cliente_ativo");
     const wonMonth = wonAll.filter((l) => new Date(l.updated_at) >= monthStart);
     const wonMonthValue = wonMonth.reduce((s, l) => s + (l.estimated_value ?? 0), 0);
     const closed = leads.filter(
-      (l) => l.stage === "fechado_ganhou" || l.stage === "perdido"
+      (l) => l.stage === "cliente_ativo" || l.stage === "arquivado"
     ).length;
     const conversion = closed > 0 ? Math.round((wonAll.length / closed) * 100) : 0;
     return {
@@ -82,24 +82,24 @@ export default function DashboardPage() {
     <div>
       <PageHeader
         title="Dashboard"
-        description="Visão geral do seu pipeline de vendas."
+        description="Visão consolidada da carteira e do pipeline de prospecção."
       />
 
       <div className="px-8 pb-12 space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KPI
-            label="Total de leads"
+            label="Cadastros na carteira"
             value={stats.total}
             icon={<Users size={18} />}
           />
           <KPI
-            label="Pipeline em aberto"
+            label="Honorários em prospecção"
             value={formatCurrency(stats.totalPipeline)}
             icon={<DollarSign size={18} />}
             highlight
           />
           <KPI
-            label="Ganhos no mês"
+            label="Contratos firmados no mês"
             value={`${stats.wonMonth} · ${formatCurrency(stats.wonMonthValue)}`}
             icon={<Trophy size={18} />}
           />
@@ -111,7 +111,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="card p-5">
-          <h3 className="font-semibold mb-4">Leads por estágio</h3>
+          <h3 className="font-semibold mb-4">Distribuição por estágio</h3>
           {loading ? (
             <div className="text-sm text-[var(--muted-foreground)]">Carregando...</div>
           ) : (
@@ -135,7 +135,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="card p-5">
-          <h3 className="font-semibold mb-4">Resumo por estágio</h3>
+          <h3 className="font-semibold mb-4">Resumo financeiro por estágio</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {PIPELINE_STAGES.map((s) => {
               const items = leads.filter((l) => l.stage === s.id);

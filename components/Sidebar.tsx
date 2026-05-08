@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Kanban, Users, Upload } from "lucide-react";
+import { LayoutDashboard, Kanban, Users, Upload, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/pipeline", label: "Pipeline", icon: Kanban },
-  { href: "/leads", label: "Leads", icon: Users },
+  { href: "/leads", label: "Clientes potenciais", icon: Users },
   { href: "/leads/import", label: "Importar", icon: Upload },
 ];
 
@@ -18,9 +18,12 @@ export default function Sidebar() {
     <aside className="w-60 shrink-0 bg-brand-black text-white flex flex-col border-r border-black/40">
       <div className="px-5 py-6 border-b border-white/10">
         <Link href="/pipeline" className="block">
-          <div className="text-xs uppercase tracking-[0.2em] text-white/50">CRM</div>
-          <div className="brand-gradient-text text-2xl font-bold leading-tight">
-            CRM Design
+          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/50">
+            <Scale size={12} className="text-[var(--brand-gold)]" />
+            <span>CRM</span>
+          </div>
+          <div className="brand-gradient-text text-2xl font-bold leading-tight tracking-tight">
+            CRM Jurídico
           </div>
         </Link>
       </div>
@@ -37,7 +40,7 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
                 active
-                  ? "brand-gradient text-black font-semibold"
+                  ? "gold-gradient text-black font-semibold"
                   : "text-white/80 hover:bg-white/5"
               )}
             >
@@ -47,8 +50,8 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className="p-4 text-xs text-white/40 border-t border-white/10">
-        Feito para designers que vendem.
+      <div className="p-4 text-xs text-white/40 border-t border-white/10 leading-relaxed">
+        Prospecção e gestão de carteira para advocacia.
       </div>
     </aside>
   );

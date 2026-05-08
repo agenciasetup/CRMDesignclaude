@@ -22,7 +22,7 @@ export default function LeadForm({
   const [phone, setPhone] = useState(initial?.phone ?? "");
   const [company, setCompany] = useState(initial?.company ?? "");
   const [instagram, setInstagram] = useState(initial?.instagram ?? "");
-  const [stage, setStage] = useState<Stage>((initial?.stage as Stage) ?? "novo_lead");
+  const [stage, setStage] = useState<Stage>((initial?.stage as Stage) ?? "prospeccao");
   const [source, setSource] = useState(initial?.source ?? "");
   const [tagsInput, setTagsInput] = useState((initial?.tags ?? []).join(", "));
   const [estimatedValue, setEstimatedValue] = useState<string>(
@@ -45,7 +45,7 @@ export default function LeadForm({
         .map((t) => t.trim())
         .filter(Boolean);
       await onSubmit({
-        name: name.trim() || "Sem nome",
+        name: name.trim() || "Sem identificação",
         email: email.trim() || null,
         phone: phone.trim() || null,
         company: company.trim() || null,
@@ -68,7 +68,7 @@ export default function LeadForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Nome" required>
+        <Field label="Razão social / Contato" required>
           <input
             className="input"
             value={name ?? ""}
@@ -76,14 +76,14 @@ export default function LeadForm({
             required
           />
         </Field>
-        <Field label="Empresa">
+        <Field label="Empresa / CNPJ">
           <input
             className="input"
             value={company ?? ""}
             onChange={(e) => setCompany(e.target.value)}
           />
         </Field>
-        <Field label="E-mail">
+        <Field label="E-mail corporativo">
           <input
             className="input"
             type="email"
@@ -98,21 +98,21 @@ export default function LeadForm({
             onChange={(e) => setPhone(e.target.value)}
           />
         </Field>
-        <Field label="Instagram">
+        <Field label="Perfil online (LinkedIn, site, @)">
           <input
             className="input"
-            placeholder="@usuario"
+            placeholder="linkedin.com/in/... ou @perfil"
             value={instagram ?? ""}
             onChange={(e) => setInstagram(e.target.value)}
           />
         </Field>
-        <Field label="Fonte">
+        <Field label="Origem">
           <input
             className="input"
             list="lead-sources"
             value={source ?? ""}
             onChange={(e) => setSource(e.target.value)}
-            placeholder="ex: Instagram, Indicação"
+            placeholder="ex: Indicação, LinkedIn, OAB"
           />
           <datalist id="lead-sources">
             {LEAD_SOURCES.map((s) => (
@@ -133,15 +133,15 @@ export default function LeadForm({
             ))}
           </select>
         </Field>
-        <Field label="Tags (separadas por vírgula)">
+        <Field label="Áreas de atuação / Tags">
           <input
             className="input"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
-            placeholder="branding, identidade, urgente"
+            placeholder="trabalhista, tributário, contratos"
           />
         </Field>
-        <Field label="Valor estimado (R$)">
+        <Field label="Honorários estimados (R$)">
           <input
             className="input"
             type="number"
@@ -150,7 +150,7 @@ export default function LeadForm({
             onChange={(e) => setEstimatedValue(e.target.value)}
           />
         </Field>
-        <Field label="Probabilidade (%)">
+        <Field label="Probabilidade de contratação (%)">
           <input
             className="input"
             type="number"

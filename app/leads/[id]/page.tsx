@@ -49,7 +49,7 @@ export default function LeadProfilePage({
 
   async function handleDelete() {
     if (!lead) return;
-    if (!confirm(`Apagar lead "${lead.name}"? Essa ação não pode ser desfeita.`)) return;
+    if (!confirm(`Confirma a exclusão do cadastro de "${lead.name}"? A operação é irreversível.`)) return;
     await deleteLead(lead.id);
     router.push("/pipeline");
   }
@@ -72,7 +72,7 @@ export default function LeadProfilePage({
         <Link href="/pipeline" className="text-sm hover:underline">
           ← Voltar ao pipeline
         </Link>
-        <div className="mt-4">Lead não encontrado.</div>
+        <div className="mt-4">Cadastro não localizado.</div>
       </div>
     );
   }
@@ -88,7 +88,7 @@ export default function LeadProfilePage({
               <ArrowLeft size={16} /> Pipeline
             </Link>
             <button onClick={handleDelete} className="btn-ghost text-red-600">
-              <Trash2 size={16} /> Apagar
+              <Trash2 size={16} /> Excluir
             </button>
           </>
         }
@@ -120,7 +120,7 @@ export default function LeadProfilePage({
               }
             />
             <Stat
-              label="Valor estimado"
+              label="Honorários estimados"
               value={
                 <div className="font-semibold brand-gradient-text text-lg">
                   {formatCurrency(lead.estimated_value)}
@@ -136,7 +136,7 @@ export default function LeadProfilePage({
               }
             />
             <Stat
-              label="Fonte"
+              label="Origem"
               value={<div className="text-sm">{lead.source ?? "—"}</div>}
             />
           </div>
@@ -180,7 +180,7 @@ export default function LeadProfilePage({
             </div>
           )}
           <div className="text-xs text-[var(--muted-foreground)] mt-3">
-            Criado em {new Date(lead.created_at).toLocaleString("pt-BR")} · Atualizado{" "}
+            Cadastrado em {new Date(lead.created_at).toLocaleString("pt-BR")} · Última atualização{" "}
             {new Date(lead.updated_at).toLocaleString("pt-BR")} · Estágio atual:{" "}
             <span style={{ color: STAGE_ACCENT[lead.stage] }}>{STAGE_LABEL[lead.stage]}</span>
           </div>
@@ -188,16 +188,16 @@ export default function LeadProfilePage({
 
         <div className="border-b border-[var(--border)] flex gap-1">
           <TabButton active={tab === "dados"} onClick={() => setTab("dados")}>
-            Dados
+            Cadastro
           </TabButton>
           <TabButton active={tab === "interacoes"} onClick={() => setTab("interacoes")}>
-            Interações
+            Histórico de contatos
           </TabButton>
         </div>
 
         {tab === "dados" ? (
           <div className="card p-5">
-            <LeadForm initial={lead} onSubmit={handleSave} submitLabel="Salvar alterações" />
+            <LeadForm initial={lead} onSubmit={handleSave} submitLabel="Salvar cadastro" />
           </div>
         ) : (
           <InteractionTimeline leadId={lead.id} />
