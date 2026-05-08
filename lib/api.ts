@@ -3,13 +3,23 @@
 import { supabase } from "./supabase";
 import type { Lead, Interaction, Stage, InteractionType } from "./types";
 
+function pgError(err: unknown): Error {
+  if (err && typeof err === "object") {
+    const e = err as { message?: string; details?: string; hint?: string; code?: string };
+    const parts = [e.message, e.details, e.hint && `(dica: ${e.hint})`, e.code && `[${e.code}]`]
+      .filter(Boolean);
+    return new Error(parts.join(" — ") || "Erro desconhecido do Supabase.");
+  }
+  return new Error(String(err));
+}
+
 export async function listLeads(): Promise<Lead[]> {
   const { data, error } = await supabase()
     .from("leads")
     .select("*")
     .order("position", { ascending: true })
     .order("created_at", { ascending: false });
-  if (error) throw error;
+  if (error) throw pgError(error);
   return (data ?? []) as Lead[];
 }
 
@@ -17,7 +27,7 @@ export async function getLead(id: string): Promise<Lead | null> {
   const { data, error } = await supabase().from("leads").select("*").eq("id", id).single();
   if (error) {
     if (error.code === "PGRST116") return null;
-    throw error;
+    throw pgError(error);
   }
   return data as Lead;
 }
@@ -38,7 +48,7 @@ export async function createLead(lead: Partial<Lead>): Promise<Lead> {
     position: lead.position ?? Date.now(),
   };
   const { data, error } = await supabase().from("leads").insert(payload).select().single();
-  if (error) throw error;
+  if (error) throw pgError(error);
   return data as Lead;
 }
 
@@ -49,13 +59,13 @@ export async function updateLead(id: string, patch: Partial<Lead>): Promise<Lead
     .eq("id", id)
     .select()
     .single();
-  if (error) throw error;
+  if (error) throw pgError(error);
   return data as Lead;
 }
 
 export async function deleteLead(id: string): Promise<void> {
   const { error } = await supabase().from("leads").delete().eq("id", id);
-  if (error) throw error;
+  if (error) throw pgError(error);
 }
 
 export async function bulkInsertLeads(leads: Partial<Lead>[]): Promise<number> {
@@ -79,7 +89,7 @@ export async function bulkInsertLeads(leads: Partial<Lead>[]): Promise<number> {
       position: base + i + idx,
     }));
     const { error, data } = await supabase().from("leads").insert(chunk).select("id");
-    if (error) throw error;
+    if (error) throw pgError(error);
     inserted += data?.length ?? 0;
   }
   return inserted;
@@ -90,7 +100,7 @@ export async function moveLead(id: string, stage: Stage, position: number): Prom
     .from("leads")
     .update({ stage, position })
     .eq("id", id);
-  if (error) throw error;
+  if (error) throw pgError(error);
 }
 
 export async function listInteractions(leadId: string): Promise<Interaction[]> {
@@ -99,7 +109,7 @@ export async function listInteractions(leadId: string): Promise<Interaction[]> {
     .select("*")
     .eq("lead_id", leadId)
     .order("occurred_at", { ascending: false });
-  if (error) throw error;
+  if (error) throw pgError(error);
   return (data ?? []) as Interaction[];
 }
 
@@ -113,11 +123,11 @@ export async function addInteraction(
     .insert({ lead_id: leadId, type, content })
     .select()
     .single();
-  if (error) throw error;
+  if (error) throw pgError(error);
   return data as Interaction;
 }
 
 export async function deleteInteraction(id: string): Promise<void> {
   const { error } = await supabase().from("interactions").delete().eq("id", id);
-  if (error) throw error;
+  if (error) throw pgError(error);
 }

@@ -32,7 +32,7 @@ preto e branco.
 ### 1. Criar projeto Supabase
 
 1. Crie um projeto em [supabase.com](https://supabase.com).
-2. No SQL Editor, execute o conteúdo de [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql) — isso cria as tabelas `leads` e `interactions` com RLS permissivo (sem login, uso pessoal).
+2. No SQL Editor, execute o conteúdo de [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql) — isso cria as tabelas `leads` e `interactions` com RLS permissivo (sem login, uso pessoal). Se você já rodou a 0001 antes do dia 8/mai, rode também [`0002_position_bigint.sql`](supabase/migrations/0002_position_bigint.sql) para evitar overflow do campo `position`.
 3. Em **Project Settings → API**, copie a `URL` e a `anon public key`.
 
 ### 2. Variáveis de ambiente

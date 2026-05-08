@@ -16,7 +16,7 @@ create table if not exists leads (
   estimated_value numeric(12,2),
   probability int check (probability is null or (probability between 0 and 100)),
   notes text,
-  position int not null default 0,
+  position bigint not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
