@@ -6,9 +6,11 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
+  DragOverEvent,
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
   closestCorners,
 } from "@dnd-kit/core";
 import {
@@ -75,9 +77,10 @@ export default function PipelineBoard() {
     return leads.find((l) => l.id === id);
   }
 
-  function findStageOfId(id: string): Stage | null {
-    if ((PIPELINE_STAGES as { id: Stage }[]).some((s) => s.id === id)) {
-      return id as Stage;
+  function resolveStage(id: string): Stage | null {
+    if (id.startsWith("col-")) {
+      const s = id.slice(4) as Stage;
+      if ((PIPELINE_STAGES as { id: Stage }[]).some((x) => x.id === s)) return s;
     }
     const l = findLead(id);
     return l?.stage ?? null;
@@ -87,46 +90,62 @@ export default function PipelineBoard() {
     setActiveId(String(e.active.id));
   }
 
+  function handleDragOver(e: DragOverEvent) {
+    const { active, over } = e;
+    if (!over) return;
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    const activeLead = findLead(activeId);
+    if (!activeLead) return;
+    const overStage = resolveStage(overId);
+    if (!overStage) return;
+    if (activeLead.stage === overStage) return;
+    setLeads((prev) =>
+      prev.map((l) => (l.id === activeId ? { ...l, stage: overStage } : l))
+    );
+  }
+
   async function handleDragEnd(e: DragEndEvent) {
     setActiveId(null);
     const { active, over } = e;
     if (!over) return;
-    const activeIdStr = String(active.id);
-    const overIdStr = String(over.id);
-    const activeLead = findLead(activeIdStr);
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    const activeLead = findLead(activeId);
     if (!activeLead) return;
-
-    const overStage = findStageOfId(overIdStr);
+    const overStage = resolveStage(overId);
     if (!overStage) return;
 
-    let newOrder: Lead[];
-    if (activeLead.stage === overStage) {
-      const stageLeads = byStage[overStage];
-      const oldIndex = stageLeads.findIndex((l) => l.id === activeIdStr);
-      const overIndex = stageLeads.findIndex((l) => l.id === overIdStr);
-      const newIndex = overIndex >= 0 ? overIndex : stageLeads.length - 1;
-      if (oldIndex === newIndex) return;
-      newOrder = arrayMove(stageLeads, oldIndex, newIndex);
+    const targetItems = leads
+      .filter((l) => l.stage === overStage)
+      .sort((a, b) => a.position - b.position);
+
+    const oldIndex = targetItems.findIndex((l) => l.id === activeId);
+    let newIndex: number;
+    if (overId.startsWith("col-")) {
+      newIndex = oldIndex >= 0 ? targetItems.length - 1 : targetItems.length;
     } else {
-      const stageLeads = byStage[overStage];
-      const overIndex = stageLeads.findIndex((l) => l.id === overIdStr);
-      const insertAt = overIndex >= 0 ? overIndex : stageLeads.length;
-      const moved = { ...activeLead, stage: overStage };
-      newOrder = [...stageLeads];
-      newOrder.splice(insertAt, 0, moved);
+      const overIndex = targetItems.findIndex((l) => l.id === overId);
+      newIndex = overIndex >= 0 ? overIndex : targetItems.length - 1;
     }
 
-    const updates = newOrder.map((l, i) => ({ ...l, position: i, stage: overStage }));
+    let reordered = targetItems;
+    if (oldIndex >= 0 && newIndex >= 0 && oldIndex !== newIndex) {
+      reordered = arrayMove(targetItems, oldIndex, newIndex);
+    }
+
+    const updates = reordered.map((l, i) => ({ id: l.id, position: i, stage: overStage }));
     const updatesById = new Map(updates.map((u) => [u.id, u]));
 
     setLeads((prev) =>
-      prev.map((l) => updatesById.get(l.id) ?? (l.id === activeIdStr ? { ...l, stage: overStage } : l))
+      prev.map((l) => {
+        const u = updatesById.get(l.id);
+        return u ? { ...l, stage: u.stage, position: u.position } : l;
+      })
     );
 
     try {
-      await Promise.all(
-        updates.map((u) => moveLead(u.id, overStage, u.position))
-      );
+      await Promise.all(updates.map((u) => moveLead(u.id, u.stage, u.position)));
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "Erro ao mover lead.");
     }
@@ -154,6 +173,7 @@ export default function PipelineBoard() {
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-4 overflow-x-auto scrollbar-slim pb-4">
@@ -215,10 +235,13 @@ function Column({
   items: Lead[];
   onAdd: () => void;
 }) {
+  const droppableId = `col-${stage}`;
+  const { setNodeRef, isOver } = useDroppable({ id: droppableId });
   return (
     <div
-      id={stage}
-      className="w-72 shrink-0 bg-[var(--muted)] rounded-xl flex flex-col max-h-[calc(100vh-12rem)]"
+      className={`w-72 shrink-0 bg-[var(--muted)] rounded-xl flex flex-col max-h-[calc(100vh-12rem)] transition-colors ${
+        isOver ? "ring-2 ring-[var(--brand-yellow)]" : ""
+      }`}
     >
       <div className="px-3 py-3 border-b border-black/5 flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
@@ -243,19 +266,19 @@ function Column({
         </div>
       )}
       <SortableContext
-        id={stage}
+        id={droppableId}
         items={items.map((i) => i.id)}
         strategy={verticalListSortingStrategy}
       >
         <div
+          ref={setNodeRef}
           className="flex-1 overflow-y-auto scrollbar-slim p-2 space-y-2 min-h-32"
-          data-stage-droppable={stage}
         >
           {items.map((lead) => (
             <SortableLeadCard key={lead.id} lead={lead} />
           ))}
           {items.length === 0 && (
-            <div className="text-xs text-[var(--muted-foreground)] text-center py-6">
+            <div className="text-xs text-[var(--muted-foreground)] text-center py-6 select-none">
               Sem leads
             </div>
           )}
